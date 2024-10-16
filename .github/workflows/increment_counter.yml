@@ -1,0 +1,33 @@
+name: Increment Counter
+
+on:
+  workflow_dispatch: # Permet de déclencher le workflow manuellement
+
+jobs:
+  increment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Read current counter
+        id: read_counter
+        run: |
+          echo "CURRENT_COUNT=$(cat compteur.txt)" >> $GITHUB_ENV
+
+      - name: Increment counter
+        run: |
+          NEW_COUNT=$((CURRENT_COUNT + 1))
+          echo $NEW_COUNT > compteur.txt
+          echo "Counter incremented to $NEW_COUNT"
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "you@example.com" # Remplacez par votre adresse email
+          git config --local user.name "Your Name" # Remplacez par votre nom
+          git add compteur.txt
+          git commit -m "Increased execution counter to $NEW_COUNT"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Utiliser le token de GitHub Actions pour authentification
